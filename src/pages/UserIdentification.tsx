@@ -12,7 +12,7 @@ import {
   Keyboard,
   Alert,
 } from "react-native";
-// import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import colors from "../styles/colors";
 import fonts from "../styles/fonts";
@@ -37,22 +37,21 @@ export function UserIdentification() {
     setName(value);
   }
 
-  // async
-  function handleSubmit() {
+  async function handleSubmit() {
     if (!name) return Alert.alert("Me diz como chamar você 😢");
 
-    // try {
-    // await AsyncStorage.setItem('@plantmanager:user', name);
-    navigation.navigate("Confirmation", {
-      title: "Prontinho",
-      subtitle: `Agora vamos começar a cuidar das suas plantinhas com muito cuidado.`,
-      buttonTitle: "Começar",
-      icon: "smile",
-      nextScreen: "PlantSelect",
-    });
-    // } catch {
-    //   Alert.alert('Não foi possível salvar o seu nome. 😢');
-    // }
+    try {
+      await AsyncStorage.setItem("@plantmanager:user", name);
+      navigation.navigate("Confirmation", {
+        title: "Prontinho",
+        subtitle: `Agora vamos começar a cuidar das suas plantinhas com muito cuidado.`,
+        buttonTitle: "Começar",
+        icon: "smile",
+        nextScreen: "PlantSelect",
+      });
+    } catch {
+      Alert.alert("Não foi possível salvar o seu nome. 😢");
+    }
   }
 
   return (

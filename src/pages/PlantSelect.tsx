@@ -12,9 +12,11 @@ import { Header } from "../components/Header";
 import { EnvironmentButton } from "../components/EnvironmentButton";
 import { PlantCardPrimary } from "../components/PlantCardPrimary";
 import { Load } from "../components/Load";
-// import { PlantProps } from '../libs/storage';
+
+import { PlantProps } from "../libs/storage";
 
 import api from "../services/api";
+
 import colors from "../styles/colors";
 import fonts from "../styles/fonts";
 
@@ -23,22 +25,9 @@ interface EnvironmentProps {
   title: string;
 }
 
-export interface PlantProps {
-  id: string;
-  name: string;
-  about: string;
-  water_tips: string;
-  photo: string;
-  environments: [string];
-  frequency: {
-    times: number;
-    repeat_every: string;
-  };
-  dateTimeNotification: Date;
-  hour: string;
-}
-
 export function PlantSelect() {
+  const navigation = useNavigation();
+
   const [environments, setEnvironments] = useState<EnvironmentProps[]>([]);
   const [environmentSelected, setEnvironmentSelected] = useState("all");
   const [plants, setPlants] = useState<PlantProps[]>([]);
@@ -46,14 +35,18 @@ export function PlantSelect() {
   const [loading, setLoading] = useState(true);
 
   const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
 
-  const navigation = useNavigation();
+  const limitPerPage = 8;
 
   async function fetchEnvironment() {
-    const { data } = await api.get(
-      "plants_environments?_sort=title&_order=asc"
-    );
+    const { data } = await api.get("/plants_environments", {
+      params: {
+        _sort: "title",
+        _order: "asc",
+      },
+    });
 
     setEnvironments([
       {
@@ -65,15 +58,21 @@ export function PlantSelect() {
   }
 
   async function fetchPlants() {
-    const { data } = await api.get(
-      `plants?_sort=name&_order=asc&_page=${page}&_limit=8`
-    );
+    const { data } = await api.get(`/plants`, {
+      params: {
+        _sort: "name",
+        _order: "asc",
+        _page: page,
+        _limit: limitPerPage,
+      },
+    });
 
     if (!data) return setLoading(true);
+    if (data.length < limitPerPage) setHasMore(false);
 
     if (page > 1) {
-      setPlants((oldValue) => [...oldValue, ...data]);
-      setFilteredPlants((oldValue) => [...oldValue, ...data]);
+      setPlants([...plants, ...data]);
+      setFilteredPlants([...filteredPlants, ...data]);
     } else {
       setPlants(data);
       setFilteredPlants(data);
@@ -92,10 +91,10 @@ export function PlantSelect() {
   }, []);
 
   function handleFetchMore(distance: number) {
-    if (distance < 1) return;
+    if (distance < 1 || !hasMore) return;
 
     setLoadingMore(true);
-    setPage((oldValue) => oldValue + 1);
+    setPage(page + 1);
     fetchPlants();
   }
 
@@ -129,7 +128,7 @@ export function PlantSelect() {
       <View>
         <FlatList
           data={environments}
-          // keyExtractor={(item) => String(item.key)}
+          keyExtractor={(item) => String(item.key)}
           renderItem={({ item }) => (
             <EnvironmentButton
               title={item.title}
@@ -148,12 +147,12 @@ export function PlantSelect() {
       <View style={styles.plants}>
         <FlatList
           data={filteredPlants}
-          // keyExtractor={(item) => String(item.id)}
+          keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => (
             <PlantCardPrimary
               name={item.name}
               photo={item.photo}
-              // onPress={() => handlePlantSelect(item)}
+              onPress={() => handlePlantSelect(item)}
             />
           )}
           showsVerticalScrollIndicator={false}
