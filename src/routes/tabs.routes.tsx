@@ -1,5 +1,4 @@
 import React from "react";
-import { Platform } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { MaterialIcons } from "@expo/vector-icons";
 
@@ -10,7 +9,7 @@ import colors from "../styles/colors";
 
 const AppTab = createBottomTabNavigator();
 
-const AuthRoutes: React.FC = () => {
+const AuthRoutes = () => {
   return (
     <AppTab.Navigator
       tabBarOptions={{

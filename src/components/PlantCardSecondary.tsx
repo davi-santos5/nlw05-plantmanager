@@ -23,19 +23,18 @@ export function PlantCardSecondary({
   handleRemove,
   ...rest
 }: PlantCardSecondaryProps) {
+  const buttonRemove = (
+    <Animated.View>
+      <View>
+        <RectButton style={styles.buttonRemove} onPress={handleRemove}>
+          <Feather name="trash" size={32} color={colors.white} />
+        </RectButton>
+      </View>
+    </Animated.View>
+  );
+
   return (
-    <Swipeable
-      overshootRight={false}
-      renderRightActions={() => (
-        <Animated.View>
-          <View>
-            <RectButton style={styles.buttonRemove} onPress={handleRemove}>
-              <Feather name="trash" size={32} color={colors.white} />
-            </RectButton>
-          </View>
-        </Animated.View>
-      )}
-    >
+    <Swipeable overshootRight={false} renderRightActions={() => buttonRemove}>
       <RectButton style={styles.container} {...rest}>
         <SvgFromUri uri={data.photo} width={50} height={50} />
         <Text style={styles.title}>{data.name}</Text>

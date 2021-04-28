@@ -51,9 +51,11 @@ export function MyPlants() {
           try {
             await removePlant(plant.id);
 
-            setMyPlants((oldData) =>
-              oldData.filter((item) => item.id !== plant.id)
+            const updatedPlants = myPlants.filter(
+              (item) => item.id !== plant.id
             );
+
+            setMyPlants(updatedPlants);
           } catch (error) {
             Alert.alert("Não foi possível remover! 😥");
           }
@@ -88,7 +90,7 @@ export function MyPlants() {
             />
           )}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ flex: 1 }}
+          contentContainerStyle={{ flex: 1, marginBottom: 60 }}
         />
       </View>
     </View>
